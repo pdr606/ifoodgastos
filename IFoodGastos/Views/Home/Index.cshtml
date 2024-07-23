@@ -1,0 +1,105 @@
+﻿@model IFoodGastos.Models.IFoodTotalOrdersDTO
+
+<form method="post">
+    <div class="row mt-5">
+        <div class="offset-1 col-10">
+            <a class="btn btn-outline-primary mt-2 col-4" data-toggle="collapse" href="#bearerTokenInfo" role="button" aria-expanded="false" aria-controls="bearerTokenInfo">
+                Informações
+            </a>
+        </div>
+    </div>
+    <div class="collapse mt-2" id="bearerTokenInfo">
+        <div class="row">
+            <div class="offset-1 col-10">
+                <b>O que é Bearer Token?</b>
+                <p>O Bearer Token é o seu Token que válida e autoriza as suas requisições,</p>
+                <p>com ele você terá os dados referentes a sua conta.</p>
+                <b>Como pegar meu Bearer Token?</b>
+                <p><strong>1</strong> - Logue na sua conta do <strong>IFood</strong> pelo navegador Web.</p>
+                <p><strong>2</strong> - Clique com botão <strong>direito</strong> do mouse em qualquer lugar da tela</p>
+                <p><strong>3</strong> - Selecione a opção <strong>Inspecionar</strong> como na imagem abaixo:</p>
+                <img src="~/imgs/1-step.png" />
+                <p><strong>4</strong> - Após inspecionar selecione a opção <strong>Aplicação</strong> / <strong>Application</strong> como na imagem abaixo:</p>
+                <img src="~/imgs/2-step.png" />
+                <p><strong>5</strong> - Selecione a opções de <strong>Cookies</strong> como na imagem abaixo:</p>
+                <img src="~/imgs/3-step.png" />
+                <p><strong>6</strong> - Copie o código à frente do <strong>accessToken</strong> como na imagem abaixo:</p>
+                <img src="~/imgs/4-step.png" />
+            </div>
+        </div>
+    </div>
+    <div class="row mt-3">
+        <div class="offset-1 col-10">
+            <b>Bearer Token</b>&nbsp;
+            <div class="input-group">
+                <input type="text" class="form-control" name="bearerToken" id="bearerToken" placeholder="eyJraWQiOiJiNjRjNjZmZS00ZWY..." value="@Model.Bearer">
+                &nbsp;
+                <span class="input-group-btn">
+                    <button class="btn btn-outline-danger" type="submit">Pesquisar</button>
+                </span>
+            </div>
+        </div>
+    </div>
+
+    <br />
+    @if (Model.Orders != null && Model.Orders.Count > 0)
+    {
+        <div class="row">
+            <div class="offset-3 col-6 alert alert-warning text-center">
+                <h2>Total Pedidos</h2>
+                <h1><b>@Model.Orders.Count</b></h1>
+            </div>
+        </div>
+        <div class="row">
+            <div class="offset-3 col-6 alert alert-danger text-center">
+                <h2>Total Gasto</h2>
+                <h1><b>@(((Model.Orders.Sum(x => x.bag.total.valueWithDiscount)) / 100m).ToString("c"))</b></h1>
+            </div>
+        </div>
+
+        <div class="row mt-3">
+            <div class="offset-1 col-10">
+                <table class="table table-striped" style="height:250px; overflow-y:auto">
+                    <thead>
+                        <tr>
+                            <th scope="col">Logo</th>
+                            <th scope="col">Data</th>
+                            <th scope="col">Valor</th>
+                            <th scope="col">Estabelecimento</th>
+                            <th scope="col">Met. Pagamento</th>
+                            <th scope="col">Qtd. Itens</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var order in Model.Orders)
+                        {
+                            <tr>
+                                <td style="text-align:center; vertical-align: middle;">
+                                    <img src="https://static.ifood-static.com.br/image/upload/t_thumbnail/logosgde/@order.merchant.logo" alt="Logo do Estabelecimento" style="max-width: 100px; max-height: 100px;">
+                                </td>
+                                <td style="text-align:center; vertical-align: middle;">@order.createdAt.ToString("dd/MM/yyyy")</td>
+                                <td style="text-align:center; vertical-align: middle;">R$ @((order.bag.total.valueWithDiscount / 100m).ToString("N2", new System.Globalization.CultureInfo("pt-BR")))</td>
+                                <td style="text-align:center; vertical-align: middle;">@order.merchant.name</td>
+                                <td style="text-align:center; vertical-align: middle;">@order.payments.methods.First().brand.name</td>
+                                <td style="text-align:center; vertical-align: middle;">@order.bag.items.Count</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="row mt-3">
+            <div class="offset-1 col-10 alert alert-info text-center">
+                <h3>Nenhum pedido encontrado (Verifique o TOKEN).</h3>
+            </div>
+        </div>
+    }
+</form>
+
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.11.0/umd/popper.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
